@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A New Year Love Experience</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Cormorant Garamond", serif;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        color: #fff;
+        height: 100vh;
+      }
+
+      .screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.8s ease, visibility 0.8s ease;
+      }
+
+      .screen.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Screen 1: Intro */
+      #intro {
+        background: radial-gradient(circle at center, #2d1b3d 0%, #1a1a2e 100%);
+      }
+
+      .intro-text {
+        font-family: "Playfair Display", serif;
+        font-size: 1.8rem;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 3rem;
+        letter-spacing: 2px;
+        opacity: 0;
+        animation: fadeInUp 1s ease forwards 0.3s;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .heart-container {
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .heart {
+        font-size: 5rem;
+        color: #ff6b9d;
+        filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5));
+        transition: transform 0.2s ease;
+      }
+
+      .heart-container:active .heart {
+        transform: scale(0.9);
+      }
+
+      .loader-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 107, 157, 0.2);
+      }
+
+      .loader-progress {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        width: 120px;
+        height: 120px;
+      }
+
+      .loader-progress circle {
+        fill: none;
+        stroke: #ff6b9d;
+        stroke-width: 3;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 10px rgba(255, 107, 157, 0.8));
+        transition: stroke-dashoffset 0.1s linear;
+      }
+
+      .instruction-text {
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        opacity: 0.8;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Screen 2: Distractions */
+      #distractions {
+        background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+        position: relative;
+      }
+
+      .distraction-title {
+        font-family: "Playfair Display", serif;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-weight: 300;
+      }
+
+      .distraction-subtitle {
+        font-size: 1.2rem;
+        text-align: center;
+        opacity: 0.7;
+        margin-bottom: 3rem;
+      }
+
+      .cards-container {
+        position: relative;
+        width: 90%;
+        max-width: 400px;
+        height: 450px;
+      }
+
+      .distraction-card {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: grab;
+        user-select: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding: 1rem;
+      }
+
+      .distraction-card:active {
+        cursor: grabbing;
+      }
+
+      .distraction-card.swiped {
+        pointer-events: none;
+      }
+
+      .distraction-card .emoji {
+        font-size: 2.5rem;
+        filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+      }
+
+      .distraction-card .label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      /* Sticky note colors */
+      .card-blue {
+        background: #b3d9ff;
+        transform: rotate(-8deg);
+      }
+
+      .card-yellow {
+        background: #fff4a3;
+        transform: rotate(8deg);
+      }
+
+      .card-peach {
+        background: #ffd4a3;
+        transform: rotate(-5deg);
+      }
+
+      .card-pink {
+        background: #ffc9e5;
+        transform: rotate(5deg);
+      }
+
+      .gift-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #ff4d7d 0%, #ff1f5a 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        opacity: 0;
+        transition: all 0.5s ease;
+        cursor: pointer;
+        box-shadow: 0 10px 40px rgba(255, 77, 125, 0.5);
+        z-index: 100;
+      }
+
+      .gift-box.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: giftBounce 1s ease infinite;
+      }
+
+      @keyframes giftBounce {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.15);
+        }
+      }
+
+      /* Floating sparkles in background */
+      .sparkle-bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .sparkle-dot {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        animation: twinkle 3s ease-in-out infinite;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.2;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.5);
+        }
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      /* Screen 3: Gift Reveal */
+      #gift-reveal {
+        background: radial-gradient(circle at center, #3d2463 0%, #1a1a2e 100%);
+      }
+
+      .gift-container {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .gift-container:hover {
+        transform: scale(1.05);
+      }
+
+      .gift-icon {
+        font-size: 8rem;
+        filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.3));
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .gift-text {
+        margin-top: 2rem;
+        font-size: 1.5rem;
+        opacity: 0.9;
+      }
+
+      /* Screen 4: Golden Ticket */
+      #golden-ticket {
+        background: linear-gradient(
+          135deg,
+          #0f0c29 0%,
+          #302b63 50%,
+          #24243e 100%
+        );
+        overflow: hidden;
+      }
+
+      .ticket {
+        background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+        border-radius: 15px;
+        padding: 0;
+        max-width: 380px;
+        width: 90%;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+        animation: ticketEntry 0.8s ease forwards;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Holographic effect overlay */
+      .ticket::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 100%
+        );
+        animation: shine 3s ease-in-out infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          left: -100%;
+        }
+        50%,
+        100% {
+          left: 100%;
+        }
+      }
+
+      @keyframes ticketEntry {
+        from {
+          opacity: 0;
+          transform: rotateX(90deg) scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: rotateX(0) scale(1);
+        }
+      }
+
+      /* Ticket header */
+      .ticket-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 1.5rem 2rem;
+        text-align: center;
+        position: relative;
+        border-bottom: 3px dashed rgba(255, 255, 255, 0.4);
+      }
+
+      .ticket-header::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        left: -10px;
+        width: 20px;
+        height: 20px;
+        background: #0f0c29;
+        border-radius: 50%;
+      }
+
+      .ticket-header::before {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        background: #0f0c29;
+        border-radius: 50%;
+      }
+
+      .ticket-type {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0.5rem;
+      }
+
+      .ticket-title {
+        font-family: "Playfair Display", serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-align: center;
+        color: #fff;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+        margin: 0;
+      }
+
+      /* Ticket body */
+      .ticket-body {
+        background: linear-gradient(
+          135deg,
+          #ffecd2 0%,
+          #fcb69f 50%,
+          #ff9a9e 100%
+        );
+        padding: 2rem 2rem 1.5rem;
+        position: relative;
+      }
+
+      /* Decorative corner elements */
+      .ticket-corner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .ticket-corner.top-left {
+        top: 10px;
+        left: 10px;
+        border-right: none;
+        border-bottom: none;
+      }
+
+      .ticket-corner.top-right {
+        top: 10px;
+        right: 10px;
+        border-left: none;
+        border-bottom: none;
+      }
+
+      .ticket-corner.bottom-left {
+        bottom: 10px;
+        left: 10px;
+        border-right: none;
+        border-top: none;
+      }
+
+      .ticket-corner.bottom-right {
+        bottom: 10px;
+        right: 10px;
+        border-left: none;
+        border-top: none;
+      }
+
+      .ticket-item {
+        font-size: 1.15rem;
+        margin: 1rem 0;
+        padding: 0.8rem 1rem;
+        position: relative;
+        color: #2d3436;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+      }
+
+      .ticket-item-icon {
+        font-size: 1.5rem;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+
+      /* Ticket footer */
+      .ticket-footer {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        text-align: center;
+        padding: 1.5rem 2rem;
+        border-top: 3px dashed rgba(255, 255, 255, 0.4);
+        position: relative;
+      }
+
+      .ticket-footer::after {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: -10px;
+        width: 20px;
+        height: 20px;
+        background: #0f0c29;
+        border-radius: 50%;
+      }
+
+      .ticket-footer::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        right: -10px;
+        width: 20px;
+        height: 20px;
+        background: #0f0c29;
+        border-radius: 50%;
+      }
+
+      .ticket-validity {
+        font-style: italic;
+        font-size: 1.1rem;
+        color: #fff;
+        font-weight: 600;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        letter-spacing: 1px;
+      }
+
+      .ticket-code {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: "Courier New", monospace;
+        letter-spacing: 2px;
+      }
+
+      .swipe-hint {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 1rem;
+        opacity: 0.7;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      /* Screen 5: Memories */
+      #memories {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+      }
+
+      .memories-title {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .memory-stack {
+        position: relative;
+        width: 90%;
+        max-width: 350px;
+        height: 620px;
+      }
+
+      .memory-card {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        cursor: grab;
+        user-select: none;
+        overflow: hidden;
+        padding: 15px;
+      }
+
+      .memory-card:active {
+        cursor: grabbing;
+      }
+
+      .memory-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+      }
+
+      .memory-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #666;
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 10px;
+      }
+
+      .memory-counter {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 1rem;
+      }
+
+      /* Screen 6: New Year Card */
+      #new-year-card {
+        background: radial-gradient(circle at center, #4a148c 0%, #1a1a2e 100%);
+      }
+
+      .card-container {
+        perspective: 1000px;
+        cursor: pointer;
+      }
+
+      .card-3d {
+        width: 350px;
+        height: 500px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 1s ease;
+      }
+
+      .card-3d.flipped {
+        transform: rotateY(180deg);
+      }
+
+      .card-front,
+      .card-inside {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .card-front {
+        background: linear-gradient(135deg, #c31432 0%, #240b36 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .card-front-title {
+        font-family: "Playfair Display", serif;
+        font-size: 3rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1rem;
+        color: #ffd700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .card-front-year {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .card-inside {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe0b2 100%);
+        transform: rotateY(180deg);
+        padding: 3rem 2rem;
+        overflow-y: auto;
+      }
+
+      .card-message {
+        color: #333;
+        font-size: 1.3rem;
+        line-height: 1.8;
+        text-align: center;
+      }
+
+      .card-message h2 {
+        font-family: "Playfair Display", serif;
+        color: #c31432;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+      }
+
+      .card-signature {
+        margin-top: 2rem;
+        font-style: italic;
+        text-align: right;
+        color: #666;
+      }
+
+      .tap-hint {
+        margin-top: 2rem;
+        font-size: 1rem;
+        opacity: 0.7;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      /* Sparkles */
+      .sparkle {
+        position: absolute;
+        pointer-events: none;
+        font-size: 1.5rem;
+        animation: sparkleFloat 2s ease-out forwards;
+      }
+
+      @keyframes sparkleFloat {
+        0% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-100px) scale(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Screen 1: Intro -->
+    <div id="intro" class="screen active">
+      <div class="intro-text">Hold your heart close...</div>
+      <div class="heart-container" id="heartContainer">
+        <div class="loader-ring"></div>
+        <svg class="loader-progress" width="120" height="120">
+          <circle
+            cx="60"
+            cy="60"
+            r="56"
+            stroke-dasharray="351.86"
+            stroke-dashoffset="351.86"
+            id="progressCircle"
+          ></circle>
+        </svg>
+        <div class="heart">❤️</div>
+      </div>
+      <div class="instruction-text">Press and hold</div>
+    </div>
+
+    <!-- Screen 2: Distractions -->
+    <div id="distractions" class="screen">
+      <div class="sparkle-bg">
+        <div
+          class="sparkle-dot"
+          style="top: 10%; left: 15%; animation-delay: 0s"
+        ></div>
+        <div
+          class="sparkle-dot"
+          style="top: 20%; left: 80%; animation-delay: 0.5s"
+        ></div>
+        <div
+          class="sparkle-dot"
+          style="top: 60%; left: 10%; animation-delay: 1s"
+        ></div>
+        <div
+          class="sparkle-dot"
+          style="top: 75%; left: 85%; animation-delay: 1.5s"
+        ></div>
+        <div
+          class="sparkle-dot"
+          style="top: 35%; left: 90%; animation-delay: 2s"
+        ></div>
+      </div>
+      <div class="distraction-title">Something is waiting for you</div>
+      <div class="distraction-subtitle">Move the little distractions aside</div>
+      <div class="cards-container" id="cardsContainer">
+        <div
+          class="distraction-card card-blue"
+          data-index="0"
+          style="top: 10%; left: 15%"
+        >
+          <div class="emoji">📏</div>
+          <div class="label">Distance</div>
+        </div>
+        <div
+          class="distraction-card card-yellow"
+          data-index="1"
+          style="top: 10%; right: 15%"
+        >
+          <div class="emoji">😓</div>
+          <div class="label">Stress</div>
+        </div>
+        <div
+          class="distraction-card card-peach"
+          data-index="2"
+          style="bottom: 10%; left: 15%"
+        >
+          <div class="emoji">💼</div>
+          <div class="label">Work</div>
+        </div>
+        <div
+          class="distraction-card card-pink"
+          data-index="3"
+          style="bottom: 10%; right: 15%"
+        >
+          <div class="emoji">🌧️</div>
+          <div class="label">Bad Days</div>
+        </div>
+      </div>
+      <div class="gift-box" id="giftBoxPreview">🎁</div>
+    </div>
+
+    <!-- Screen 3: Gift Reveal -->
+    <div id="gift-reveal" class="screen">
+      <div class="gift-container" id="giftContainer">
+        <div class="gift-icon">🎁</div>
+        <div class="gift-text">Tap to open your gift...</div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Golden Ticket -->
+    <div id="golden-ticket" class="screen">
+      <div class="ticket" id="ticketElement">
+        <div class="ticket-header">
+          <div class="ticket-type">★ VIP Access ★</div>
+          <div class="ticket-title">Love Ticket</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-corner top-left"></div>
+          <div class="ticket-corner top-right"></div>
+          <div class="ticket-corner bottom-left"></div>
+          <div class="ticket-corner bottom-right"></div>
+
+          <div class="ticket-item">
+            <div class="ticket-item-icon">💕</div>
+            <div>Unlimited Love & Support</div>
+          </div>
+          <div class="ticket-item">
+            <div class="ticket-item-icon">🌟</div>
+            <div>Endless Adventures Together</div>
+          </div>
+          <div class="ticket-item">
+            <div class="ticket-item-icon">🤗</div>
+            <div>Unconditional Understanding</div>
+          </div>
+          <div class="ticket-item">
+            <div class="ticket-item-icon">😄</div>
+            <div>Infinite Joy & Laughter</div>
+          </div>
+        </div>
+        <div class="ticket-footer">
+          <div class="ticket-validity">✨ Valid Forever • No Expiry ✨</div>
+          <div class="ticket-code">LOVE-2025-FOREVER</div>
+        </div>
+      </div>
+      <div class="swipe-hint">Tap or swipe to continue</div>
+    </div>
+
+    <!-- Screen 5: Memories -->
+    <div id="memories" class="screen">
+      <div class="memories-title">Our Beautiful Moments</div>
+      <div class="memory-stack" id="memoryStack">
+        <!-- Memory cards will be generated here -->
+      </div>
+      <div class="memory-counter">
+        <span id="memoryCount">0</span> / <span id="memoryTotal">0</span>
+      </div>
+    </div>
+
+    <!-- Screen 6: New Year Card -->
+    <div id="new-year-card" class="screen">
+      <div class="card-container" id="cardContainer">
+        <div class="card-3d" id="card3d">
+          <!-- FRONT OF CARD -->
+          <div class="card-front">
+            <div class="card-front-title">Happy New Year</div>
+            <div class="card-front-year">2025</div>
+            <div style="margin-top: 2rem; font-size: 3rem">✨🎊🎉</div>
+          </div>
+
+          <!-- INSIDE OF CARD -->
+          <div class="card-inside">
+            <div class="card-message">
+              <h2>My Dearest Palaku,</h2>
+
+              <p>
+                As we step into this new year together, I want you to know that
+                every moment with you has been a precious gift. You've filled my
+                life with joy, laughter, and a love so deep it takes my breath
+                away.
+              </p>
+
+              <p>
+                Here's to more adventures, more memories, more of us. May this
+                year bring us even closer, jaan, and may our love continue to
+                grow stronger with each passing day.
+              </p>
+
+              <p>
+                Thank you for being my everything. I love you more than words
+                can express.
+              </p>
+
+              <div class="card-signature">
+                Forever yours,<br />
+                — always your Palku ❤️
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tap-hint" id="tapHint">Tap to open the card</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Utility function to switch screens
+      function switchScreen(fromId, toId) {
+        const from = document.getElementById(fromId);
+        const to = document.getElementById(toId);
+        from.classList.remove("active");
+        setTimeout(() => {
+          to.classList.add("active");
+        }, 100);
+      }
+
+      // Screen 1: Intro - Hold Heart
+      (function () {
+        const heartContainer = document.getElementById("heartContainer");
+        const progressCircle = document.getElementById("progressCircle");
+        const circumference = 351.86;
+        let holdProgress = 0;
+        let isHolding = false;
+        let holdInterval;
+
+        function updateProgress() {
+          const offset = circumference - (holdProgress / 100) * circumference;
+          progressCircle.style.strokeDashoffset = offset;
+        }
+
+        function startHolding() {
+          isHolding = true;
+          holdInterval = setInterval(() => {
+            if (holdProgress < 100) {
+              holdProgress += 2;
+              updateProgress();
+              if (holdProgress >= 100) {
+                completeHold();
+              }
+            }
+          }, 50);
+        }
+
+        function stopHolding() {
+          isHolding = false;
+          clearInterval(holdInterval);
+          holdProgress = 0;
+          updateProgress();
+        }
+
+        function completeHold() {
+          clearInterval(holdInterval);
+          createSparkles(heartContainer);
+          setTimeout(() => {
+            switchScreen("intro", "distractions");
+          }, 500);
+        }
+
+        heartContainer.addEventListener("mousedown", startHolding);
+        heartContainer.addEventListener("mouseup", stopHolding);
+        heartContainer.addEventListener("mouseleave", stopHolding);
+        heartContainer.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          startHolding();
+        });
+        heartContainer.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          stopHolding();
+        });
+
+        updateProgress();
+      })();
+
+      // Screen 2: Distractions - Swipe Cards
+      (function () {
+        const cards = document.querySelectorAll(".distraction-card");
+        const giftBox = document.getElementById("giftBoxPreview");
+        let cardsRemaining = cards.length;
+
+        console.log("Total cards:", cardsRemaining);
+
+        // Make gift box clickable
+        giftBox.addEventListener("click", () => {
+          console.log("Gift box clicked");
+          switchScreen("distractions", "gift-reveal");
+        });
+
+        cards.forEach((card, index) => {
+          let startX,
+            startY,
+            currentX = 0,
+            currentY = 0;
+          let isDragging = false;
+
+          function handleStart(e) {
+            isDragging = true;
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            card.style.transition = "none";
+            card.style.zIndex = 1000;
+          }
+
+          function handleMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const touch = e.touches ? e.touches[0] : e;
+            currentX = touch.clientX - startX;
+            currentY = touch.clientY - startY;
+            const rotation = index % 2 === 0 ? -8 : 8;
+            card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${
+              rotation + currentX * 0.1
+            }deg)`;
+          }
+
+          function handleEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const threshold = 100;
+            if (
+              Math.abs(currentX) > threshold ||
+              Math.abs(currentY) > threshold
+            ) {
+              console.log("Card swiped away, remaining:", cardsRemaining - 1);
+              card.style.transition = "all 0.5s ease";
+              card.style.transform = `translate(${currentX * 3}px, ${
+                currentY * 3
+              }px) rotate(${currentX * 0.5}deg)`;
+              card.style.opacity = "0";
+              card.classList.add("swiped");
+              cardsRemaining--;
+
+              if (cardsRemaining === 0) {
+                console.log("All cards removed! Showing gift box...");
+                setTimeout(() => {
+                  giftBox.classList.add("show");
+                  console.log(
+                    "Gift box class added:",
+                    giftBox.classList.contains("show")
+                  );
+                }, 600);
+              }
+            } else {
+              card.style.transition = "all 0.3s ease";
+              const rotation = index % 2 === 0 ? -8 : 8;
+              card.style.transform = `rotate(${
+                [rotation, -rotation, rotation, -rotation][index]
+              }deg)`;
+              card.style.zIndex = "";
+            }
+          }
+
+          card.addEventListener("mousedown", handleStart);
+          card.addEventListener("mousemove", handleMove);
+          card.addEventListener("mouseup", handleEnd);
+          card.addEventListener("mouseleave", handleEnd);
+          card.addEventListener("touchstart", handleStart, { passive: false });
+          card.addEventListener("touchmove", handleMove, { passive: false });
+          card.addEventListener("touchend", handleEnd);
+        });
+      })();
+
+      // Screen 3: Gift Reveal
+      (function () {
+        const giftContainer = document.getElementById("giftContainer");
+        giftContainer.addEventListener("click", () => {
+          createSparkles(giftContainer);
+          setTimeout(() => {
+            switchScreen("gift-reveal", "golden-ticket");
+          }, 500);
+        });
+      })();
+
+      // Screen 4: Golden Ticket
+      (function () {
+        const ticket = document.getElementById("ticketElement");
+        let startX;
+
+        function handleSwipe(e) {
+          if (e.type === "touchstart") {
+            startX = e.touches[0].clientX;
+          } else if (e.type === "touchend") {
+            const endX = e.changedTouches[0].clientX;
+            if (Math.abs(endX - startX) > 100) {
+              switchScreen("golden-ticket", "memories");
+              initMemories();
+            }
+          }
+        }
+
+        ticket.addEventListener("click", () => {
+          switchScreen("golden-ticket", "memories");
+          initMemories();
+        });
+        ticket.addEventListener("touchstart", handleSwipe);
+        ticket.addEventListener("touchend", handleSwipe);
+      })();
+
+      // Screen 5: Memories
+      function initMemories() {
+        const memoryStack = document.getElementById("memoryStack");
+        const memoryCount = document.getElementById("memoryCount");
+        const memoryTotal = document.getElementById("memoryTotal");
+
+        // 🔴 YOUR PHOTOS ARE REFERENCED HERE! 🔴
+        const memories = [
+          {
+            text: "Our First Date 💕",
+            color: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+            image: "images/1.png",
+          },
+          {
+            text: "That Perfect Sunset 🌅",
+            color: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+            image: "images/2.png",
+          },
+          {
+            text: "Dancing in the Rain ☔",
+            color: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
+            image: "images/3.png",
+          },
+          {
+            text: "Our Cozy Movie Nights 🎬",
+            color: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+            image: "images/4.png",
+          },
+          {
+            text: "Every Little Moment ✨",
+            color: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+            image: "images/5.jpg",
+          },
+        ];
+
+        memoryTotal.textContent = memories.length;
+        let currentMemory = 0;
+
+        memories.forEach((memory, index) => {
+          const card = document.createElement("div");
+          card.className = "memory-card";
+          card.style.zIndex = memories.length - index;
+          card.style.transform = `rotate(${(Math.random() - 0.5) * 10}deg)`;
+
+          if (memory.image) {
+            // If image is provided, try to load it
+            const img = document.createElement("img");
+            img.src = memory.image;
+
+            // If image fails to load, show placeholder with gradient
+            img.onerror = function () {
+              const placeholder = document.createElement("div");
+              placeholder.className = "memory-placeholder";
+              placeholder.style.background = memory.color;
+              placeholder.textContent = memory.text;
+              card.innerHTML = "";
+              card.appendChild(placeholder);
+            };
+
+            card.appendChild(img);
+          } else {
+            // No image provided, use gradient placeholder
+            const placeholder = document.createElement("div");
+            placeholder.className = "memory-placeholder";
+            placeholder.style.background = memory.color;
+            placeholder.textContent = memory.text;
+            card.appendChild(placeholder);
+          }
+
+          let startX, startY, currentX, currentY;
+          let isDragging = false;
+
+          function handleStart(e) {
+            if (index !== currentMemory) return;
+            isDragging = true;
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            card.style.transition = "none";
+          }
+
+          function handleMove(e) {
+            if (!isDragging || index !== currentMemory) return;
+            const touch = e.touches ? e.touches[0] : e;
+            currentX = touch.clientX - startX;
+            currentY = touch.clientY - startY;
+            card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${
+              currentX * 0.1
+            }deg)`;
+          }
+
+          function handleEnd() {
+            if (!isDragging || index !== currentMemory) return;
+            isDragging = false;
+
+            const threshold = 120;
+            if (
+              Math.abs(currentX) > threshold ||
+              Math.abs(currentY) > threshold
+            ) {
+              card.style.transition = "all 0.5s ease";
+              card.style.transform = `translate(${currentX * 3}px, ${
+                currentY * 3
+              }px) rotate(${currentX * 0.5}deg)`;
+              card.style.opacity = "0";
+              currentMemory++;
+              memoryCount.textContent = currentMemory;
+
+              if (currentMemory === memories.length) {
+                setTimeout(() => {
+                  switchScreen("memories", "new-year-card");
+                }, 800);
+              }
+            } else {
+              card.style.transition = "all 0.3s ease";
+              card.style.transform = "translate(0, 0) rotate(0deg)";
+            }
+          }
+
+          card.addEventListener("mousedown", handleStart);
+          card.addEventListener("mousemove", handleMove);
+          card.addEventListener("mouseup", handleEnd);
+          card.addEventListener("touchstart", handleStart);
+          card.addEventListener("touchmove", handleMove);
+          card.addEventListener("touchend", handleEnd);
+
+          memoryStack.appendChild(card);
+        });
+      }
+
+      // Screen 6: New Year Card
+      (function () {
+        const card3d = document.getElementById("card3d");
+        const cardContainer = document.getElementById("cardContainer");
+        const tapHint = document.getElementById("tapHint");
+
+        cardContainer.addEventListener("click", () => {
+          if (!card3d.classList.contains("flipped")) {
+            card3d.classList.add("flipped");
+            tapHint.style.display = "none";
+            createSparkles(cardContainer);
+          }
+        });
+      })();
+
+      // Sparkle effect utility
+      function createSparkles(container) {
+        const sparkles = ["✨", "⭐", "💫", "🌟"];
+        for (let i = 0; i < 15; i++) {
+          setTimeout(() => {
+            const sparkle = document.createElement("div");
+            sparkle.className = "sparkle";
+            sparkle.textContent =
+              sparkles[Math.floor(Math.random() * sparkles.length)];
+            sparkle.style.left = Math.random() * 100 + "%";
+            sparkle.style.top = Math.random() * 100 + "%";
+            container.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 2000);
+          }, i * 100);
+        }
+      }
+    </script>
+  </body>
+</html>
